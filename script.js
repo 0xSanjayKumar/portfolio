@@ -188,6 +188,111 @@ if (barsEl) {
   barsObserver.observe(barsEl);
 }
 
+const radarEl = document.getElementById('ploRadar');
+if (radarEl && barsEl) {
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const data = [...barsEl.querySelectorAll('.bar-row')].map(row => ({
+    label: row.querySelector('.bar-n').textContent.replace('PLO ', ''),
+    value: parseFloat(row.dataset.value)
+  }));
+
+  const cx = 150, cy = 150, R = 108;
+  const minV = 0.75, maxV = 1.00;
+  const rings = 5;
+  const n = data.length;
+  const angleFor = i => (Math.PI * 2 * i / n) - Math.PI / 2;
+  const radiusFor = v => R * Math.max(0, Math.min(1, (v - minV) / (maxV - minV)));
+
+  const gridG = radarEl.querySelector('.radar-grid');
+  const axesG = radarEl.querySelector('.radar-axes');
+  const dotsG = radarEl.querySelector('.radar-dots');
+  const labelsG = radarEl.querySelector('.radar-labels');
+  const ringLabelsG = radarEl.querySelector('.radar-ring-labels');
+  const shape = radarEl.querySelector('.radar-shape');
+
+  for (let i = 1; i <= rings; i++) {
+    const r = R * (i / rings);
+    const pts = data.map((_, j) => {
+      const a = angleFor(j);
+      return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+    });
+    const poly = document.createElementNS(svgNS, 'polygon');
+    poly.setAttribute('points', pts.join(' '));
+    poly.setAttribute('class', 'radar-ring');
+    gridG.appendChild(poly);
+
+    const label = document.createElementNS(svgNS, 'text');
+    label.setAttribute('x', cx + 3);
+    label.setAttribute('y', cy - r);
+    label.setAttribute('class', 'radar-ring-label');
+    label.textContent = (minV + (maxV - minV) * (i / rings)).toFixed(2);
+    ringLabelsG.appendChild(label);
+  }
+
+  data.forEach((d, j) => {
+    const a = angleFor(j);
+    const x = cx + R * Math.cos(a);
+    const y = cy + R * Math.sin(a);
+
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', cx);
+    line.setAttribute('y1', cy);
+    line.setAttribute('x2', x);
+    line.setAttribute('y2', y);
+    line.setAttribute('class', 'radar-axis');
+    axesG.appendChild(line);
+
+    const lr = R + 16;
+    const lx = cx + lr * Math.cos(a);
+    const ly = cy + lr * Math.sin(a);
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', lx);
+    text.setAttribute('y', ly);
+    text.setAttribute('class', 'radar-label');
+    text.setAttribute('text-anchor', Math.abs(Math.cos(a)) < 0.2 ? 'middle' : (Math.cos(a) > 0 ? 'start' : 'end'));
+    text.setAttribute('dominant-baseline', Math.abs(Math.sin(a)) < 0.2 ? 'middle' : (Math.sin(a) > 0 ? 'hanging' : 'auto'));
+    text.textContent = d.label;
+    labelsG.appendChild(text);
+
+    const r = radiusFor(d.value);
+    const dot = document.createElementNS(svgNS, 'circle');
+    dot.setAttribute('cx', cx + r * Math.cos(a));
+    dot.setAttribute('cy', cy + r * Math.sin(a));
+    dot.setAttribute('r', 3);
+    dot.setAttribute('class', 'radar-dot');
+    dotsG.appendChild(dot);
+  });
+
+  shape.setAttribute('points', data.map((d, j) => {
+    const a = angleFor(j);
+    const r = radiusFor(d.value);
+    return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+  }).join(' '));
+
+  const radarObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('visible');
+      radarObserver.unobserve(e.target);
+    });
+  }, { threshold: 0.25 });
+  radarObserver.observe(radarEl);
+}
+
+const fypVideo = document.getElementById('fypVideo');
+if (fypVideo) {
+  const fypObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        fypVideo.play().catch(() => {});
+      } else {
+        fypVideo.pause();
+      }
+    });
+  }, { threshold: 0.5 });
+  fypObserver.observe(fypVideo);
+}
+
 const cf = document.getElementById('contactForm');
 const cfStatus = document.getElementById('cf-status');
 

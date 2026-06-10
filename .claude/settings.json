@@ -12,7 +12,10 @@
       "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --window-size=600,400 --hide-scrollbars --screenshot=\"C:/Users/sanja/Music/portfolio/.shots3/direct.png\" --virtual-time-budget=4000 \"http://localhost:8000/assets/digital_twin_poster.jpg\")",
       "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --window-size=1440,1000 --hide-scrollbars --screenshot=\"C:/Users/sanja/Music/portfolio/.shots4/fyp_only.png\" --virtual-time-budget=20000 \"http://localhost:8000/index.html#fyp\")",
       "Bash(rm -rf .test .shots .shots2 .shots3 .shots4)",
-      "Bash(pkill -f \"http.server 8000\")"
+      "Bash(pkill -f \"http.server 8000\")",
+      "Bash(python -c \"from PIL import Image; print\\('tb2',Image.open\\('assets/turtlebot2.png'\\).size\\); print\\('med',Image.open\\('assets/medical_dispensing.jpg'\\).size\\)\")",
+      "Bash(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 assets/Sprayer_Testing.mp4)",
+      "Bash(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 assets/digital_twin.mp4)"
     ]
   }
 }
