@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#08090a"/>
+  <rect x="3" y="3" width="26" height="26" fill="none" stroke="#c8601a" stroke-width="1.5"/>
+  <circle cx="5.5" cy="5.5" r="2.5" fill="#c8601a"/>
+  <circle cx="26.5" cy="26.5" r="2.5" fill="#c8601a"/>
+  <text x="16" y="22" font-family="Georgia, serif" font-size="13" font-weight="700" fill="#ede9e3" text-anchor="middle">SK</text>
+</svg>

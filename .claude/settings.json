@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(chromium-cli --help)",
+      "Bash(powershell -Command \"Start-Process 'http://localhost:8811/index.html'\")",
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)",
+      "Read(//c/Users/sanja/AppData/Local/Temp/**)",
+      "Bash(node -e ' *)",
+      "Bash(node -c \"c:\\\\Users\\\\sanja\\\\Downloads\\\\portfolio-main\\\\portfolio-main\\\\app.js\")",
+      "Bash(curl -s -m 8 -o /tmp/countapi.json -w \"HTTP %{http_code}\\\\n\" \"https://api.countapi.xyz/get/sanjaykumaru-mechatronics-portfolio/likes\")",
+      "Read(//tmp/**)",
+      "Bash(curl -sk -m 8 \"https://abacus.jasoncameron.dev/get/sanjaykumaru-mechatronics-portfolio/likes\")",
+      "Bash(curl -sk -m 8 \"https://abacus.jasoncameron.dev/hit/sanjaykumaru-mechatronics-portfolio/likes\")",
+      "Bash(curl -sk -m 8 \"https://api.counterapi.dev/v1/sanjaykumaru-portfolio/likes/up\")"
+    ]
+  }
+}
