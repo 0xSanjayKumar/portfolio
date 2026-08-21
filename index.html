@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sanjay Kumar — Mechatronics Engineer</title>
-<meta name="description" content="Final-year Mechatronics Engineer with 7 months of commercial robotics at Meraque Group — STM32/FreeRTOS firmware, RTK-GPS navigation at ~2 cm accuracy, ROS 2 systems and a digital-twin FYP in NVIDIA Isaac Sim. Open to graduate roles.">
+<meta name="description" content="Mechatronics Engineer with 16 months at Meraque Group building autonomous field robots — STM32/FreeRTOS firmware, RTK-GPS navigation at ~2 cm accuracy, ROS 2 systems and a full digital twin of a production spraying AGV in NVIDIA Isaac Sim. Seeking a robotics or embedded systems role.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Sanjay Kumar — Mechatronics Engineer">
 <meta property="og:description" content="Machines that sense, think and move — shipped to the field. STM32/FreeRTOS, RTK-GPS (~2 cm), ROS 2, Isaac Sim digital twin.">
@@ -13,29 +13,25 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,300..900&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="boot" id="boot" aria-hidden="true">
-  <pre class="boot-log" id="bootLog"></pre>
-</div>
 
 <div class="scroll-prog" id="scrollProg" aria-hidden="true"></div>
 
 <header class="rail" id="rail">
   <a href="#top" class="rail-mark" aria-label="Sanjay Kumar — top"><span>SK</span></a>
   <nav class="rail-index" id="navLinks" aria-label="Sections">
-    <a href="#skills" data-label="Skills"><i>J01</i></a>
-    <a href="#experience" data-label="Experience"><i>J02</i></a>
-    <a href="#fyp" data-label="Final Year Project"><i>J03</i></a>
-    <a href="#projects" data-label="Projects"><i>J04</i></a>
-    <a href="#education" data-label="Education"><i>J05</i></a>
-    <a href="#leadership" data-label="Leadership"><i>J06</i></a>
-    <a href="#swot" data-label="Strategic Profile"><i>J07</i></a>
-    <a href="#outcomes" data-label="Programme Outcomes"><i>J08</i></a>
-    <a href="#contact" data-label="Contact"><i>J09</i></a>
+    <a href="#skills" data-label="Skills"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#experience" data-label="Experience"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#fyp" data-label="Final Year Project"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#projects" data-label="Projects"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#education" data-label="Education"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#leadership" data-label="Leadership"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#swot" data-label="Strategic Profile"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#outcomes" data-label="Programme Outcomes"><i class="rail-dot" aria-hidden="true"></i></a>
+    <a href="#contact" data-label="Contact"><i class="rail-dot" aria-hidden="true"></i></a>
   </nav>
   <div class="rail-controls">
     <button class="mode-btn" id="modeBtn" aria-label="Switch between day and night mode" title="Toggle Day / Night (M)">
@@ -45,9 +41,6 @@
       <span class="mode-opt mode-sim" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       </span>
-    </button>
-    <button class="cmd-btn" id="cmdBtn" aria-label="Open operator console" title="Operator console (Ctrl+K)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 17l6-5-6-5"/><path d="M12 19h8"/></svg>
     </button>
     <button class="like-btn like-btn--rail" id="likeBtn" aria-label="Like this portfolio" aria-pressed="false" title="Like this portfolio">
       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.5-4.6-10-9.2C.5 8.4 2.4 5 6 5c2 0 3.5 1.1 4.3 2.6L12 9.5l1.7-1.9C14.5 6.1 16 5 18 5c3.6 0 5.5 3.4 4 6.8-2.5 4.6-10 9.2-10 9.2z"/></svg>
@@ -60,27 +53,28 @@
 <main class="doc" id="top">
 
   <section class="hero" id="hero">
-    <canvas class="hero-canvas" id="pcbCanvas" aria-hidden="true"></canvas>
-    <div class="hero-inner">
-      <p class="hero-tag"><span class="dot-live"></span>OPEN TO GRADUATE ROLES · SERI KEMBANGAN, MALAYSIA</p>
-      <h1 class="hero-name">SANJAY<br>KUMAR</h1>
-      <p class="hero-role">Mechatronics Engineer — machines that sense, think and move, shipped to the field.</p>
-      <p class="hero-desc">Final-year Mechatronics Engineer with 7 months of commercial robotics at Meraque Group: STM32 / FreeRTOS firmware and RTK-GPS navigation accurate to ~2 cm on agricultural AGVs. Senior Lab Technical Assistant at APU and Vice-President of the IMechE APU Student Chapter.</p>
-      <div class="hero-actions">
-        <a href="#fyp" class="btn btn-primary">View final year project</a>
-        <button class="btn btn-outline" id="briefBtn">30-second brief</button>
-        <a class="btn btn-outline" href="assets/Sanjay_Kumar_CV.pdf" download>Download CV</a>
-        <button class="btn btn-ghost" id="cmdHint">Press <kbd>Ctrl</kbd><kbd>K</kbd> for console</button>
+    <div class="hero-bento">
+      <div class="hero-inner">
+        <p class="hero-tag"><span class="dot-live"></span>OPEN TO GRADUATE ROLES · SERI KEMBANGAN, MALAYSIA</p>
+        <h1 class="hero-name">SANJAY<br>KUMAR</h1>
+        <p class="hero-role">Mechatronics Engineer — machines that sense, think and move, shipped to the field.</p>
+        <p class="hero-desc">Mechatronics engineer with 16 months at Meraque Group building autonomous field robots: STM32 / FreeRTOS firmware, RTK-GPS navigation accurate to ~2 cm and a full digital twin of a production spraying AGV in NVIDIA Isaac Sim. Senior Technical Assistant at APU and Vice-President of the IMechE APU Student Chapter. Seeking a robotics or embedded systems role.</p>
+        <div class="hero-actions">
+          <a href="#fyp" class="btn btn-primary">View final year project</a>
+          <button class="btn btn-outline" id="briefBtn">30-second brief</button>
+          <a class="btn btn-outline" href="assets/Sanjay_Kumar_CV.pdf" download>Download CV</a>
+        </div>
       </div>
-      <dl class="readout" id="readout">
-        <div><dt>Industry experience</dt><dd><span data-count="7">0</span><i>months</i></dd></div>
-        <div><dt>RTK-GPS accuracy</dt><dd><span>~2</span><i>cm</i></dd></div>
-        <div><dt>Lab equipment managed</dt><dd><span data-count="30">0</span><i>+</i></dd></div>
-        <div><dt>Team members led</dt><dd><span data-count="10">0</span><i>+</i></dd></div>
-      </dl>
+      <div class="hero-visual">
+        <img class="hero-photo" src="assets/pfp.png" alt="Portrait of Sanjay Kumar">
+      </div>
     </div>
-    <div class="hero-scan-note" aria-hidden="true">LIVE BOARD · HOVER TO PROBE NETS</div>
-    <img src="assets/pfp.png" alt="Portrait of Sanjay Kumar" id="pcbAvatarImg" hidden>
+    <dl class="hero-stats" id="readout">
+      <div class="stat-cell"><dt>Industry experience</dt><dd><span data-count="16">0</span><i>months</i></dd></div>
+      <div class="stat-cell"><dt>RTK-GPS accuracy</dt><dd><span>~2</span><i>cm</i></dd></div>
+      <div class="stat-cell"><dt>Lab equipment managed</dt><dd><span data-count="30">0</span><i>+</i></dd></div>
+      <div class="stat-cell"><dt>Team members led</dt><dd><span data-count="10">0</span><i>+</i></dd></div>
+    </dl>
   </section>
 
   <section class="sheet" id="skills">
@@ -91,9 +85,9 @@
       <span class="s-sub">Capabilities, grouped by subsystem</span>
     </header>
     <div class="spec-sheet reveal">
-      <div class="spec-row"><dt>Languages</dt><dd><span class="chip">Python</span><span class="chip">C++</span><span class="chip">C#</span><span class="chip">PLC programming</span></dd></div>
-      <div class="spec-row"><dt>Engineering software</dt><dd><span class="chip">MATLAB</span><span class="chip">SolidWorks</span><span class="chip">LabVIEW</span><span class="chip">KiCad</span><span class="chip">LTSpice</span><span class="chip">Altair</span><span class="chip">NVIDIA Isaac Sim</span></dd></div>
-      <div class="spec-row"><dt>Embedded systems</dt><dd><span class="chip">ROS 2</span><span class="chip">STM32</span><span class="chip">FreeRTOS</span><span class="chip">RTK-GPS</span><span class="chip">CAN / UART</span></dd></div>
+      <div class="spec-row"><dt>Languages</dt><dd><span class="chip">Python</span><span class="chip">C++</span><span class="chip">C</span><span class="chip">C#</span><span class="chip">PLC programming</span></dd></div>
+      <div class="spec-row"><dt>Engineering software</dt><dd><span class="chip">MATLAB / Simulink</span><span class="chip">SolidWorks</span><span class="chip">LabVIEW</span><span class="chip">KiCad</span><span class="chip">LTSpice</span><span class="chip">Altair</span><span class="chip">NVIDIA Isaac Sim</span></dd></div>
+      <div class="spec-row"><dt>Embedded systems</dt><dd><span class="chip">ROS 2</span><span class="chip">STM32</span><span class="chip">FreeRTOS</span><span class="chip">RTK-GPS</span><span class="chip">CAN / UART</span><span class="chip">YOLOv8</span></dd></div>
       <div class="spec-row"><dt>System integration</dt><dd><span class="chip">Hardware-software integration</span><span class="chip">Sensor fusion</span><span class="chip">System validation &amp; QA</span><span class="chip">Technical documentation</span></dd></div>
       <div class="spec-row"><dt>Developer tools</dt><dd><span class="chip">Git</span><span class="chip">Linux</span><span class="chip">Docker</span></dd></div>
     </div>
@@ -106,31 +100,42 @@
       <span class="s-topic">/sk/experience</span>
       <span class="s-sub">Roles held to date, most recent first</span>
     </header>
-    <div class="log reveal">
+    <div class="log log--2up reveal">
       <article class="log-row">
-        <div class="log-when"><span class="log-range">Feb — Sep 2025</span><span class="log-stat"><b>7</b>months</span></div>
+        <div class="log-when"><span class="log-range">Oct 2025 — Jun 2026</span><span class="log-stat"><b>9</b>months</span></div>
         <div class="log-body">
-          <span class="log-tag">Internship</span>
-          <h3>Robotics Engineering Intern</h3>
+          <span class="log-tag">Industry FYP Collaboration</span>
+          <h3>Robotics Engineer</h3>
           <p class="log-org">Meraque Group Sdn Bhd</p>
           <ul>
-            <li>Assisted in AGV development; implemented RTK-GPS, wireless communication and hardware integration for commercial agricultural sprayers.</li>
-            <li>Implemented FreeRTOS for multitask management; built an RTK-GPS base station achieving <strong>~2 cm positioning accuracy</strong> for autonomous navigation.</li>
-            <li>Coordinated with the AI team to integrate perception outputs with low-level motor control over CAN / UART, closing the loop between detection and actuation.</li>
-            <li>Field testing, customer demonstrations, technical documentation, system validation, QA and automotive-grade wiring in a commercial product environment.</li>
+            <li>Developed a digital twin of the company's oil palm spraying AGV in NVIDIA Isaac Sim, enabling virtual pre-deployment testing without plantation visits.</li>
+            <li>Delivered a validated simulation platform: <strong>90.5% sim-to-real synchronisation accuracy</strong>, 96.3% tree detection rate and 96.0% spray actuation accuracy across five structured test protocols.</li>
           </ul>
         </div>
       </article>
       <article class="log-row">
-        <div class="log-when"><span class="log-range">Nov 2023 — Now</span><span class="log-stat"><b>30+</b>equipment</span></div>
+        <div class="log-when"><span class="log-range">Feb — Sep 2025</span><span class="log-stat"><b>7</b>months</span></div>
+        <div class="log-body">
+          <span class="log-tag">Internship</span>
+          <h3>Electronic Engineering Intern</h3>
+          <p class="log-org">Meraque Group Sdn Bhd</p>
+          <ul>
+            <li>Built an RTK-GPS base station implementing FreeRTOS for multitask management, achieving <strong>~2 cm positioning accuracy</strong> for autonomous AGV navigation.</li>
+            <li>Contributed to STM32 firmware development in C/C++ and supporting hardware integration for spraying AGVs.</li>
+            <li>Worked with the AI team to integrate perception outputs with low-level motor control over CAN / UART, closing the loop between detection and actuation for autonomous spraying.</li>
+            <li>Supported field testing, customer demonstrations and QA during commercial deployment of the spraying AGVs.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="log-row log-row--wide">
+        <div class="log-when"><span class="log-range">Nov 2023 — Jun 2026</span><span class="log-stat"><b>30+</b>equipment</span></div>
         <div class="log-body">
           <span class="log-tag">Part-time</span>
-          <h3>Engineering Lab Technical Assistant</h3>
-          <p class="log-org">Asia Pacific University — Senior TA</p>
+          <h3>Senior Technical Assistant</h3>
+          <p class="log-org">Asia Pacific University Engineering Lab</p>
           <ul>
-            <li>Maintain 30+ lab instruments (oscilloscopes, multimeters, power supplies, embedded kits), ensuring near-zero downtime.</li>
-            <li>Supervise 20+ students per session, enforcing safety protocols and guiding correct equipment usage.</li>
-            <li>Conduct pre-session equipment checks; resolve hardware faults to minimise lab disruption.</li>
+            <li>Maintained 30+ items of lab equipment (oscilloscopes, multimeters, power supplies, embedded kits) with near-zero downtime.</li>
+            <li>Supervised 20+ students per session on safety and equipment usage.</li>
           </ul>
         </div>
       </article>
@@ -144,21 +149,23 @@
       <span class="s-topic">/sk/digital_twin</span>
       <span class="s-sub">BEng (Hons) Mechatronic Engineering · Asia Pacific University · 2026</span>
     </header>
-    <div class="feature reveal">
-      <div class="feature-media">
-        <video id="fypVideo" controls loop muted playsinline preload="none" poster="assets/digital_twin_poster.jpg"><source src="assets/digital_twin.mp4" type="video/mp4"></video>
-      </div>
-      <div class="feature-info">
-        <h3>Digital Twin of an Oil Palm Spraying AGV</h3>
-        <p class="feature-stack">NVIDIA Isaac Sim · Gaussian Splatting · YOLOv8-seg · ROS 2</p>
-        <p class="feature-desc">Built a digital twin of an oil palm spraying AGV in NVIDIA Isaac Sim, enabling virtual pre-deployment testing without physical plantation visits. The system integrates a Gaussian Splatting-reconstructed plantation environment, YOLOv8-seg tree detection, a precision sprayer controller and real-time physical-virtual synchronisation. Five structured tests confirmed 90.5% sync accuracy, 96.3% AI detection rate and 96.0% spray actuation accuracy.</p>
-        <dl class="kpi-rows">
-          <div><dt>Environment reconstruction error</dt><dd>3.32% mean geometric error</dd></div>
-          <div><dt>Sim-to-real synchronisation</dt><dd>90.5% accuracy</dd></div>
-          <div><dt>AI tree detection</dt><dd>96.3% detection rate</dd></div>
-          <div><dt>Spray actuation</dt><dd>96.0% accuracy</dd></div>
-        </dl>
-        <div class="tag-row"><span class="tag">NVIDIA Isaac Sim</span><span class="tag">Gaussian Splatting</span><span class="tag">YOLOv8-seg</span><span class="tag">ROS 2</span><span class="tag">ZED 2i</span><span class="tag">Velodyne LiDAR</span><span class="tag">SolidWorks</span></div>
+    <div class="feature-cell reveal">
+      <div class="feature">
+        <div class="feature-media">
+          <video id="fypVideo" controls loop muted playsinline preload="none" poster="assets/digital_twin_poster.jpg"><source src="assets/digital_twin.mp4" type="video/mp4"></video>
+        </div>
+        <div class="feature-info">
+          <h3>Digital Twin of an Oil Palm Spraying AGV</h3>
+          <p class="feature-stack">NVIDIA Isaac Sim · Gaussian Splatting · YOLOv8-seg · ROS 2</p>
+          <p class="feature-desc">Built a digital twin of an oil palm spraying AGV in NVIDIA Isaac Sim, enabling virtual pre-deployment testing without physical plantation visits. The system integrates a Gaussian Splatting-reconstructed plantation environment, YOLOv8-seg tree detection, a precision sprayer controller and real-time physical-virtual synchronisation. Five structured tests confirmed 90.5% sync accuracy, 96.3% AI detection rate and 96.0% spray actuation accuracy.</p>
+          <dl class="kpi-rows">
+            <div><dt>Environment reconstruction error</dt><dd>3.32% mean geometric error</dd></div>
+            <div><dt>Sim-to-real synchronisation</dt><dd>90.5% accuracy</dd></div>
+            <div><dt>AI tree detection</dt><dd>96.3% detection rate</dd></div>
+            <div><dt>Spray actuation</dt><dd>96.0% accuracy</dd></div>
+          </dl>
+          <div class="tag-row"><span class="tag">NVIDIA Isaac Sim</span><span class="tag">Gaussian Splatting</span><span class="tag">YOLOv8-seg</span><span class="tag">ROS 2</span><span class="tag">ZED 2i</span><span class="tag">Velodyne LiDAR</span><span class="tag">SolidWorks</span></div>
+        </div>
       </div>
     </div>
   </section>
@@ -285,10 +292,10 @@
       <span class="s-topic">/sk/education</span>
       <span class="s-sub">Academic record</span>
     </header>
-    <div class="log log--plain reveal">
+    <div class="log log--plain log--2up reveal">
       <article class="log-row">
-        <div class="log-when"><span class="log-range">2021 — Present</span></div>
-        <div class="log-body"><h3>Asia Pacific University</h3><p class="log-org">BEng (Hons) Mechatronic Engineering</p></div>
+        <div class="log-when"><span class="log-range">2021 — Jun 2026</span></div>
+        <div class="log-body"><h3>Asia Pacific University</h3><p class="log-org">BEng (Hons) Mechatronic Engineering · APU–DMU Dual Degree with MEng, De Montfort University, UK</p></div>
       </article>
       <article class="log-row">
         <div class="log-when"><span class="log-range">Completed 2020</span></div>
@@ -304,7 +311,7 @@
       <span class="s-topic">/sk/leadership</span>
       <span class="s-sub">Committee work and community involvement</span>
     </header>
-    <div class="log reveal">
+    <div class="log log--feature reveal">
       <article class="log-row">
         <div class="log-when"><span class="log-range">Aug 2024 — May 2026</span></div>
         <div class="log-body">
@@ -346,7 +353,7 @@
       <div class="matrix-cell s-cell">
         <span class="matrix-letter">S</span><h3>Strengths</h3>
         <ul>
-          <li>7 months commercial robotics — real AGV deployment at Meraque, including ~2 cm RTK-GPS positioning accuracy</li>
+          <li>16 months at Meraque Group — real AGV deployment including ~2 cm RTK-GPS positioning accuracy and a validated digital-twin simulation platform</li>
           <li>Hands-on across all three mechatronics domains: SolidWorks &amp; 3D printing, Python/C++/C#, PLC programming and STM32/FreeRTOS embedded systems</li>
           <li>Self-directed on open-ended problems — Sight Sense (assistive tech), the Wall-E companion robot (89% emotion recognition) and vibration-control systems</li>
           <li>Industry-standard practice from Meraque: documentation, testing, field demos and QA on a real commercial product</li>
@@ -429,18 +436,18 @@
       <span class="s-sub">Open a line — email, call, or send a brief below</span>
     </header>
     <div class="contact-layout reveal">
-      <div class="contact-side">
+      <div class="arm-panel" aria-hidden="true">
+        <canvas id="ikArm"></canvas>
+        <span class="arm-note"><i class="dot-live" aria-hidden="true"></i>2-DOF ARM · CLICK &amp; HOLD TO GRIP A PIECE</span>
+      </div>
+      <div class="contact-info">
         <dl class="contact-rows">
           <div><dt>Email</dt><dd><a href="mailto:sanjaykumaru082@gmail.com">sanjaykumaru082@gmail.com</a></dd></div>
           <div><dt>Phone</dt><dd><a href="tel:+60172886247">+60-17-288 6247</a></dd></div>
           <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/sanjay-kumar-sku" target="_blank" rel="noopener">linkedin.com/in/sanjay-kumar-sku</a></dd></div>
           <div><dt>Location</dt><dd>Seri Kembangan, Malaysia</dd></div>
-          <div><dt>Languages</dt><dd>English · Urdu · Hindi</dd></div>
+          <div><dt>Languages</dt><dd>English (Fluent) · Urdu (Native) · Hindi (Fluent)</dd></div>
         </dl>
-        <div class="arm-panel" aria-hidden="true">
-          <canvas id="ikArm"></canvas>
-          <span class="arm-note">2-DOF ARM · CLICK &amp; HOLD TO GRIP A PIECE</span>
-        </div>
       </div>
       <form class="contact-form" id="contactForm" novalidate>
         <p class="form-lead">Tell me about the role, project or opportunity — I read every message and reply from this address.</p>
@@ -468,26 +475,6 @@
   </div>
 </footer>
 
-<aside class="hud" id="hud" aria-hidden="true">
-  <span><b>MODE</b><i id="hudMode">FIELD</i></span>
-  <span><b>PWR</b><i id="hudPwr">5.00 V</i></span>
-  <span><b>SCROLL</b><i id="hudScroll">0%</i></span>
-  <span><b>SEC</b><i id="hudSec">—</i></span>
-</aside>
-
-<div class="cmdk" id="cmdk" hidden>
-  <div class="cmdk-backdrop" data-close></div>
-  <div class="cmdk-panel" role="dialog" aria-modal="true" aria-label="Operator console">
-    <div class="cmdk-input-row">
-      <span class="cmdk-prompt">&gt;_</span>
-      <input type="text" id="cmdkInput" placeholder="Type a command — goto fyp, sim, brief, email…" autocomplete="off" spellcheck="false">
-      <kbd>ESC</kbd>
-    </div>
-    <ul class="cmdk-list" id="cmdkList" role="listbox"></ul>
-    <div class="cmdk-foot"><span>↑↓ navigate</span><span>↵ run</span><span>ctrl+k toggle</span></div>
-  </div>
-</div>
-
 <div class="brief" id="brief" hidden>
   <div class="brief-backdrop" data-close></div>
   <div class="brief-panel" role="dialog" aria-modal="true" aria-label="30-second brief">
@@ -495,8 +482,8 @@
     <span class="brief-eyebrow">30-SECOND BRIEF · FOR RECRUITERS</span>
     <h3>Sanjay Kumar — Mechatronics Engineer, graduating 2026</h3>
     <ul class="brief-points">
-      <li><b>7 months commercial robotics</b> at Meraque Group — STM32/FreeRTOS firmware and an RTK-GPS base station at <b>~2 cm accuracy</b> on deployed agricultural AGVs.</li>
-      <li><b>FYP:</b> digital twin of a spraying AGV in NVIDIA Isaac Sim — 90.5% sim-to-real sync, 96.3% AI tree detection, 96.0% spray actuation.</li>
+      <li><b>16 months</b> at Meraque Group — STM32/FreeRTOS firmware, an RTK-GPS base station at <b>~2 cm accuracy</b>, and a validated digital-twin simulation platform for the company's spraying AGVs.</li>
+      <li><b>FYP:</b> digital twin of a production spraying AGV in NVIDIA Isaac Sim, built as an Industry FYP Collaboration with Meraque — 90.5% sim-to-real sync, 96.3% AI tree detection, 96.0% spray actuation.</li>
       <li><b>Full mechatronics stack:</b> ROS 2, embedded C/C++, Python, SolidWorks, PLC — plus leadership as IMechE APU Vice-President.</li>
     </ul>
     <div class="brief-actions">

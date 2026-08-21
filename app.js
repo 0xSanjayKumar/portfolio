@@ -1,58 +1,15 @@
 const root = document.documentElement;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const bootEl = document.getElementById('boot');
-const bootLog = document.getElementById('bootLog');
-const bootLines = [
-  'sk-portfolio v2.1 booting',
-  'power rails 3V3 / 5V .... <span class="ok">OK</span>',
-  'peripherals init ........ <span class="ok">OK</span>',
-  'CAN bus ................. <span class="ok">ONLINE</span>',
-  'servos homed ............ <span class="ok">OK</span>',
-  'operator console ........ <span class="ok">READY</span>'
-];
-
-function runBoot() {
-  if (reducedMotion || sessionStorage.getItem('skBooted')) {
-    bootEl.remove();
-    return;
-  }
-  let i = 0;
-  const step = () => {
-    if (i < bootLines.length) {
-      bootLog.innerHTML += bootLines[i] + '\n';
-      i++;
-      setTimeout(step, 130);
-    } else {
-      setTimeout(() => {
-        bootEl.classList.add('done');
-        sessionStorage.setItem('skBooted', '1');
-        setTimeout(() => bootEl.remove(), 450);
-      }, 240);
-    }
-  };
-  step();
-}
-runBoot();
-
-const storedMode = localStorage.getItem('skMode');
-if (storedMode === 'sim' || storedMode === 'field') root.setAttribute('data-mode', storedMode);
-
-const hudMode = document.getElementById('hudMode');
-const hudPwr = document.getElementById('hudPwr');
-const hudScroll = document.getElementById('hudScroll');
-const hudSec = document.getElementById('hudSec');
+root.setAttribute('data-mode', 'field');
 
 function setMode(mode) {
   root.setAttribute('data-mode', mode);
-  localStorage.setItem('skMode', mode);
-  hudMode.textContent = mode.toUpperCase();
   refreshThemeColors();
 }
 document.getElementById('modeBtn').addEventListener('click', () => {
   setMode(root.getAttribute('data-mode') === 'sim' ? 'field' : 'sim');
 });
-hudMode.textContent = root.getAttribute('data-mode').toUpperCase();
 
 const scrollProg = document.getElementById('scrollProg');
 const sections = [...document.querySelectorAll('main section[id]')];
@@ -62,15 +19,12 @@ function onScroll() {
   const max = document.documentElement.scrollHeight - window.innerHeight;
   const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
   scrollProg.style.width = pct + '%';
-  hudScroll.textContent = Math.round(pct) + '%';
   const sy = window.scrollY + 160;
   let cur = sections[0]?.id;
-  let curIdx = 0;
-  sections.forEach((s, i) => {
-    if (s.offsetTop <= sy) { cur = s.id; curIdx = i; }
+  sections.forEach(s => {
+    if (s.offsetTop <= sy) cur = s.id;
   });
   navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
-  hudSec.textContent = cur === 'hero' ? 'HOME' : 'J0' + curIdx + ' ' + cur.toUpperCase();
 }
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
@@ -97,244 +51,6 @@ function refreshThemeColors() {
 }
 refreshThemeColors();
 
-const pcbCanvas = document.getElementById('pcbCanvas');
-const netNames = ['VCC 3V3', 'GND', 'SDA', 'SCL', 'UART_TX', 'UART_RX', 'CAN_H', 'CAN_L', 'PWM1', 'PWM2', 'SPI_MOSI', 'SPI_MISO', 'SPI_SCK', 'ENC_A', 'ENC_B', 'ADC_IN0', 'nRST', 'BOOT0', 'STEP', 'DIR'];
-const netReadings = ['3.30 V', '0.00 V', '400 kHz', '400 kHz', '115200 bd', '115200 bd', '2.60 V', '2.40 V', '20 kHz', '20 kHz', '8 MHz', '8 MHz', '8 MHz', '1024 cpr', '1024 cpr', '1.82 V', '3.30 V', '0.00 V', '1.2 kHz', 'HIGH'];
-let pcbTraces = [];
-let pcbVias = [];
-let pcbChip = null;
-let pcbMouse = { x: -9999, y: -9999 };
-let pcbActive = true;
-const pcbAvatarEl = document.getElementById('pcbAvatarImg');
-let pcbAvatarReady = false;
-if (pcbAvatarEl) {
-  if (pcbAvatarEl.complete && pcbAvatarEl.naturalWidth) pcbAvatarReady = true;
-  else pcbAvatarEl.addEventListener('load', () => { pcbAvatarReady = true; });
-}
-
-function buildPcb(w, h) {
-  const rand = (a, b) => a + Math.random() * (b - a);
-  const snap = v => Math.round(v / 14) * 14;
-  pcbTraces = [];
-  pcbVias = [];
-  const cw = Math.min(190, w * 0.18);
-  pcbChip = { x: snap(w * 0.66), y: snap(h * 0.42), w: snap(cw), h: snap(cw) };
-  const dirs = [0, Math.PI / 4, Math.PI / 2, 3 * Math.PI / 4, Math.PI, 5 * Math.PI / 4, 3 * Math.PI / 2, 7 * Math.PI / 4];
-  const padsPerSide = 7;
-  const sides = [
-    { dx: 0, dy: -1, along: 'x' },
-    { dx: 1, dy: 0, along: 'y' },
-    { dx: 0, dy: 1, along: 'x' },
-    { dx: -1, dy: 0, along: 'y' }
-  ];
-  let netIdx = 0;
-  sides.forEach(side => {
-    for (let p = 1; p <= padsPerSide; p++) {
-      const frac = p / (padsPerSide + 1);
-      let sx, sy;
-      if (side.along === 'x') {
-        sx = pcbChip.x + pcbChip.w * frac;
-        sy = side.dy < 0 ? pcbChip.y : pcbChip.y + pcbChip.h;
-      } else {
-        sx = side.dx > 0 ? pcbChip.x + pcbChip.w : pcbChip.x;
-        sy = pcbChip.y + pcbChip.h * frac;
-      }
-      let dirIdx = dirs.indexOf(Math.atan2(side.dy, side.dx) < 0 ? 3 * Math.PI / 2 : Math.atan2(side.dy, side.dx));
-      if (dirIdx < 0) dirIdx = side.dx > 0 ? 0 : 4;
-      const pts = [{ x: sx, y: sy }];
-      let cx = sx, cy = sy;
-      const segCount = 2 + Math.floor(rand(0, 3));
-      for (let s = 0; s < segCount; s++) {
-        const dir = dirs[dirIdx];
-        const len = snap(rand(50, 190));
-        cx += Math.cos(dir) * len;
-        cy += Math.sin(dir) * len;
-        cx = Math.max(20, Math.min(w - 20, cx));
-        cy = Math.max(20, Math.min(h - 20, cy));
-        pts.push({ x: cx, y: cy });
-        dirIdx = (dirIdx + (Math.random() < 0.5 ? 1 : 7)) % 8;
-      }
-      let total = 0;
-      const lens = [];
-      for (let s = 1; s < pts.length; s++) {
-        const l = Math.hypot(pts[s].x - pts[s - 1].x, pts[s].y - pts[s - 1].y);
-        lens.push(l);
-        total += l;
-      }
-      pcbTraces.push({
-        pts, lens, total,
-        net: netNames[netIdx % netNames.length],
-        reading: netReadings[netIdx % netReadings.length],
-        pulse: Math.random(),
-        speed: rand(0.0016, 0.004)
-      });
-      pcbVias.push({ x: cx, y: cy, r: 4.5 });
-      netIdx++;
-    }
-  });
-  for (let k = 0; k < 10; k++) {
-    pcbVias.push({ x: snap(rand(30, w - 30)), y: snap(rand(30, h - 30)), r: 3 });
-  }
-}
-
-function pointOnTrace(tr, t) {
-  let d = t * tr.total;
-  for (let s = 0; s < tr.lens.length; s++) {
-    if (d <= tr.lens[s]) {
-      const a = tr.pts[s], b = tr.pts[s + 1];
-      const f = tr.lens[s] === 0 ? 0 : d / tr.lens[s];
-      return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
-    }
-    d -= tr.lens[s];
-  }
-  return tr.pts[tr.pts.length - 1];
-}
-
-function distToSegment(px, py, a, b) {
-  const dx = b.x - a.x, dy = b.y - a.y;
-  const l2 = dx * dx + dy * dy;
-  const t = l2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - a.x) * dx + (py - a.y) * dy) / l2));
-  return Math.hypot(px - (a.x + t * dx), py - (a.y + t * dy));
-}
-
-function traceDistance(tr, px, py) {
-  let best = Infinity;
-  for (let s = 1; s < tr.pts.length; s++) {
-    best = Math.min(best, distToSegment(px, py, tr.pts[s - 1], tr.pts[s]));
-  }
-  return best;
-}
-
-function drawPcb(ctx, w, h) {
-  ctx.clearRect(0, 0, w, h);
-  let probed = null;
-  let probedDist = 26;
-  for (const tr of pcbTraces) {
-    const d = traceDistance(tr, pcbMouse.x, pcbMouse.y);
-    if (d < probedDist) { probedDist = d; probed = tr; }
-  }
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  for (const tr of pcbTraces) {
-    ctx.beginPath();
-    ctx.moveTo(tr.pts[0].x, tr.pts[0].y);
-    for (let s = 1; s < tr.pts.length; s++) ctx.lineTo(tr.pts[s].x, tr.pts[s].y);
-    if (tr === probed) {
-      ctx.strokeStyle = themeColors.accent;
-      ctx.lineWidth = 2.4;
-      ctx.globalAlpha = 0.95;
-    } else {
-      ctx.strokeStyle = themeColors.mid;
-      ctx.lineWidth = 1.4;
-      ctx.globalAlpha = 0.32;
-    }
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 0.5;
-  for (const v of pcbVias) {
-    ctx.beginPath();
-    ctx.arc(v.x, v.y, v.r, 0, Math.PI * 2);
-    ctx.strokeStyle = themeColors.mid;
-    ctx.lineWidth = 1.6;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(v.x, v.y, v.r * 0.35, 0, Math.PI * 2);
-    ctx.fillStyle = themeColors.mid;
-    ctx.fill();
-  }
-  if (pcbAvatarReady) {
-    const pad = Math.max(6, pcbChip.w * 0.08);
-    const ix = pcbChip.x + pad, iy = pcbChip.y + pad;
-    const iw = pcbChip.w - pad * 2, ih = pcbChip.h - pad * 2;
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(ix, iy, iw, ih);
-    ctx.clip();
-    ctx.globalAlpha = 0.95;
-    const scale = Math.max(iw / pcbAvatarEl.naturalWidth, ih / pcbAvatarEl.naturalHeight);
-    const dw = pcbAvatarEl.naturalWidth * scale, dh = pcbAvatarEl.naturalHeight * scale;
-    ctx.drawImage(pcbAvatarEl, ix + (iw - dw) / 2, iy + (ih - dh) / 2, dw, dh);
-    ctx.restore();
-    ctx.globalAlpha = 0.7;
-    ctx.strokeStyle = themeColors.mid;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(ix, iy, iw, ih);
-  }
-  ctx.globalAlpha = 0.55;
-  ctx.strokeStyle = themeColors.mid;
-  ctx.lineWidth = 1.6;
-  ctx.strokeRect(pcbChip.x, pcbChip.y, pcbChip.w, pcbChip.h);
-  ctx.beginPath();
-  ctx.arc(pcbChip.x + 14, pcbChip.y + 14, 4, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.font = '11px "IBM Plex Mono", monospace';
-  ctx.fillStyle = themeColors.mid;
-  ctx.textAlign = 'center';
-  ctx.fillText('U1 · STM32', pcbChip.x + pcbChip.w / 2, pcbChip.y + pcbChip.h + 16);
-  ctx.fillText('SK-01 REV C', pcbChip.x + pcbChip.w / 2, pcbChip.y + pcbChip.h + 30);
-  for (const tr of pcbTraces) {
-    tr.pulse = (tr.pulse + tr.speed) % 1;
-    const p = pointOnTrace(tr, tr.pulse);
-    ctx.globalAlpha = tr === probed ? 1 : 0.7;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, tr === probed ? 3.4 : 2.2, 0, Math.PI * 2);
-    ctx.fillStyle = themeColors.accent;
-    ctx.fill();
-  }
-  if (probed) {
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = themeColors.accent;
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.arc(pcbMouse.x, pcbMouse.y, 9, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(pcbMouse.x - 15, pcbMouse.y);
-    ctx.lineTo(pcbMouse.x + 15, pcbMouse.y);
-    ctx.moveTo(pcbMouse.x, pcbMouse.y - 15);
-    ctx.lineTo(pcbMouse.x, pcbMouse.y + 15);
-    ctx.stroke();
-    const label = probed.net + '  ' + probed.reading;
-    ctx.font = '11px "IBM Plex Mono", monospace';
-    const tw = ctx.measureText(label).width;
-    const lx = Math.min(Math.max(pcbMouse.x + 18, 8), w - tw - 20);
-    const ly = Math.max(pcbMouse.y - 16, 20);
-    ctx.fillStyle = themeColors.accent;
-    ctx.textAlign = 'left';
-    ctx.fillText(label, lx, ly);
-  }
-  ctx.globalAlpha = 1;
-}
-
-function startPcb() {
-  if (!pcbCanvas || reducedMotion) return;
-  const ctx = pcbCanvas.getContext('2d');
-  const resize = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    pcbCanvas.width = pcbCanvas.clientWidth * dpr;
-    pcbCanvas.height = pcbCanvas.clientHeight * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    buildPcb(pcbCanvas.clientWidth, pcbCanvas.clientHeight);
-  };
-  resize();
-  window.addEventListener('resize', resize);
-  const hero = document.getElementById('hero');
-  hero.addEventListener('pointermove', e => {
-    const r = pcbCanvas.getBoundingClientRect();
-    pcbMouse.x = e.clientX - r.left;
-    pcbMouse.y = e.clientY - r.top;
-  });
-  hero.addEventListener('pointerleave', () => { pcbMouse.x = -9999; pcbMouse.y = -9999; });
-  const io = new IntersectionObserver(entries => { pcbActive = entries[0].isIntersecting; }, { threshold: 0.05 });
-  io.observe(hero);
-  const loop = () => {
-    if (pcbActive && !document.hidden) drawPcb(ctx, pcbCanvas.clientWidth, pcbCanvas.clientHeight);
-    requestAnimationFrame(loop);
-  };
-  loop();
-}
-startPcb();
-
 const armCanvas = document.getElementById('ikArm');
 function startArm() {
   if (!armCanvas) return;
@@ -349,17 +65,27 @@ function startArm() {
   let heldPiece = null;
   let pieces = [];
   let homeSlots = [];
+  let particles = [];
+  let pulses = [];
   const objectSpecs = [
-    { fx: 0.60, fy: 0.82, kind: 'piece', glyph: '♟' },
-    { fx: 0.76, fy: 0.66, kind: 'piece', glyph: '♞' },
-    { fx: 0.66, fy: 0.48, kind: 'piece', glyph: '♜' },
-    { fx: 0.84, fy: 0.80, kind: 'box' },
-    { fx: 0.52, fy: 0.60, kind: 'box' }
+    { fx: 0.60, fy: 0.82, kind: 'bolt' },
+    { fx: 0.76, fy: 0.66, kind: 'gear' },
+    { fx: 0.66, fy: 0.48, kind: 'resistor' },
+    { fx: 0.84, fy: 0.80, kind: 'chip' },
+    { fx: 0.52, fy: 0.60, kind: 'cap' }
   ];
   const layoutPieces = () => {
     homeSlots = objectSpecs.map(s => ({ x: w * s.fx, y: h * s.fy }));
-    pieces = objectSpecs.map((s, i) => ({ x: homeSlots[i].x, y: homeSlots[i].y, kind: s.kind, glyph: s.glyph, held: false }));
+    pieces = objectSpecs.map((s, i) => ({ x: homeSlots[i].x, y: homeSlots[i].y, kind: s.kind, held: false, home: true }));
   };
+  const spawnBurst = (x, y) => {
+    for (let i = 0; i < 10; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const speed = 1 + Math.random() * 2.2;
+      particles.push({ x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, life: 1 });
+    }
+  };
+  const spawnPulse = (x, y) => { pulses.push({ x, y, r: 6, alpha: 1 }); };
   const drawChip = (x, y, held) => {
     const bw = 20, bh = 14;
     ctx.save();
@@ -388,17 +114,114 @@ function startArm() {
     ctx.fill();
     ctx.restore();
   };
+  const drawBolt = (x, y, held) => {
+    ctx.save();
+    ctx.translate(x, y);
+    const r = 8;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI / 6 + i * Math.PI / 3;
+      const px = Math.cos(a) * r, py = Math.sin(a) * r;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = held ? themeColors.accent : themeColors.mid;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(0, 0, 3, 0, Math.PI * 2);
+    ctx.fillStyle = themeColors.ink;
+    ctx.globalAlpha = 0.55;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  };
+  const drawGear = (x, y, held) => {
+    ctx.save();
+    ctx.translate(x, y);
+    const rOuter = 10, rInner = 7, teeth = 8;
+    ctx.beginPath();
+    for (let i = 0; i < teeth; i++) {
+      const a0 = (i / teeth) * Math.PI * 2;
+      const a1 = a0 + (Math.PI * 2 / teeth) * 0.55;
+      const a2b = (i / teeth) * Math.PI * 2 + Math.PI * 2 / teeth;
+      ctx.lineTo(Math.cos(a0) * rOuter, Math.sin(a0) * rOuter);
+      ctx.lineTo(Math.cos(a1) * rOuter, Math.sin(a1) * rOuter);
+      ctx.lineTo(Math.cos(a1) * rInner, Math.sin(a1) * rInner);
+      ctx.lineTo(Math.cos(a2b) * rInner, Math.sin(a2b) * rInner);
+    }
+    ctx.closePath();
+    ctx.fillStyle = held ? themeColors.accent : themeColors.mid;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(0, 0, 3, 0, Math.PI * 2);
+    ctx.fillStyle = themeColors.ink;
+    ctx.fill();
+    ctx.restore();
+  };
+  const drawResistor = (x, y, held) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.strokeStyle = held ? themeColors.accent : themeColors.mid;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-13, 0); ctx.lineTo(-6, 0);
+    ctx.moveTo(6, 0); ctx.lineTo(13, 0);
+    ctx.stroke();
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(-6, -4, 12, 8, 2);
+    else ctx.rect(-6, -4, 12, 8);
+    ctx.fillStyle = held ? themeColors.accent : themeColors.ink;
+    ctx.fill();
+    ctx.fillStyle = held ? themeColors.ink : themeColors.faint;
+    ctx.globalAlpha = 0.85;
+    [-3, 0, 3].forEach(bx => ctx.fillRect(bx, -4, 1.3, 8));
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  };
+  const drawCap = (x, y, held) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.strokeStyle = held ? themeColors.accent : themeColors.mid;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, -10); ctx.lineTo(0, -3);
+    ctx.moveTo(0, 3); ctx.lineTo(0, 10);
+    ctx.stroke();
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-7, -3); ctx.lineTo(7, -3);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-7, 3); ctx.quadraticCurveTo(0, 5.5, 7, 3);
+    ctx.strokeStyle = held ? themeColors.accent : themeColors.ink;
+    ctx.stroke();
+    ctx.restore();
+  };
+  const drawPart = (p) => {
+    if (p.kind === 'chip') drawChip(p.x, p.y, p.held);
+    else if (p.kind === 'gear') drawGear(p.x, p.y, p.held);
+    else if (p.kind === 'resistor') drawResistor(p.x, p.y, p.held);
+    else if (p.kind === 'cap') drawCap(p.x, p.y, p.held);
+    else drawBolt(p.x, p.y, p.held);
+  };
   const resize = () => {
+    const cw = armCanvas.clientWidth, ch = armCanvas.clientHeight;
+    if (!cw || !ch || (cw === w && ch === h)) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    w = armCanvas.clientWidth;
-    h = armCanvas.clientHeight;
+    w = cw;
+    h = ch;
     armCanvas.width = w * dpr;
     armCanvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (!pieces.length) layoutPieces();
+    layoutPieces();
   };
   resize();
-  window.addEventListener('resize', resize);
+  if (window.ResizeObserver) {
+    new ResizeObserver(resize).observe(armCanvas);
+  } else {
+    window.addEventListener('resize', resize);
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
   const contactSection = document.getElementById('contact');
   contactSection.addEventListener('pointermove', e => {
     const r = armCanvas.getBoundingClientRect();
@@ -416,10 +239,25 @@ function startArm() {
       const d = Math.hypot(p.x - tipX, p.y - tipY);
       if (d < bestD) { bestD = d; best = p; }
     });
-    if (best) { best.held = true; heldPiece = best; }
+    if (best) {
+      best.held = true;
+      best.home = false;
+      heldPiece = best;
+      spawnBurst(best.x, best.y);
+    }
   };
   const tryRelease = () => {
-    if (heldPiece) { heldPiece.held = false; heldPiece = null; }
+    if (!heldPiece) return;
+    const idx = pieces.indexOf(heldPiece);
+    const hs = homeSlots[idx];
+    if (hs && Math.hypot(heldPiece.x - hs.x, heldPiece.y - hs.y) < 28) {
+      heldPiece.x = hs.x;
+      heldPiece.y = hs.y;
+      heldPiece.home = true;
+      spawnPulse(hs.x, hs.y);
+    }
+    heldPiece.held = false;
+    heldPiece = null;
   };
   armCanvas.addEventListener('pointerdown', e => {
     e.preventDefault();
@@ -479,26 +317,79 @@ function startArm() {
     ctx.lineTo(tx, ty);
     ctx.stroke();
     ctx.setLineDash([]);
+    ctx.globalAlpha = 0.4;
+    ctx.strokeStyle = themeColors.accent;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(tx, ty, 5, 0, Math.PI * 2);
+    ctx.moveTo(tx - 8, ty); ctx.lineTo(tx - 3, ty);
+    ctx.moveTo(tx + 3, ty); ctx.lineTo(tx + 8, ty);
+    ctx.moveTo(tx, ty - 8); ctx.lineTo(tx, ty - 3);
+    ctx.moveTo(tx, ty + 3); ctx.lineTo(tx, ty + 8);
+    ctx.stroke();
     ctx.globalAlpha = 1;
     ctx.fillStyle = themeColors.mid;
-    ctx.fillRect(bx - 20, by, 40, 6);
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(bx - 24, by - 2, 48, 10, 3);
+    else ctx.rect(bx - 24, by - 2, 48, 10);
+    ctx.fill();
+    ctx.globalAlpha = 0.65;
+    [-14, 14].forEach(ox => {
+      ctx.beginPath();
+      ctx.arc(bx + ox, by + 3, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = themeColors.ink;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = themeColors.ink;
+    const upperGrad = ctx.createLinearGradient(bx, by, ex, ey);
+    upperGrad.addColorStop(0, themeColors.mid);
+    upperGrad.addColorStop(0.5, themeColors.ink);
+    upperGrad.addColorStop(1, themeColors.mid);
+    ctx.strokeStyle = upperGrad;
     ctx.lineWidth = 9;
     ctx.beginPath();
     ctx.moveTo(bx, by);
     ctx.lineTo(ex, ey);
     ctx.stroke();
+    const foreGrad = ctx.createLinearGradient(ex, ey, wx, wy);
+    foreGrad.addColorStop(0, themeColors.mid);
+    foreGrad.addColorStop(0.5, themeColors.ink);
+    foreGrad.addColorStop(1, themeColors.mid);
+    ctx.strokeStyle = foreGrad;
     ctx.lineWidth = 7;
     ctx.beginPath();
     ctx.moveTo(ex, ey);
     ctx.lineTo(wx, wy);
     ctx.stroke();
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = themeColors.accent;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(bx, by);
+    ctx.lineTo(ex, ey);
+    ctx.lineTo(wx, wy);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
     [[bx, by, 7], [ex, ey, 6]].forEach(([jx, jy, jr]) => {
+      ctx.strokeStyle = themeColors.mid;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.6;
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(jx + Math.cos(a) * (jr + 1.5), jy + Math.sin(a) * (jr + 1.5));
+        ctx.lineTo(jx + Math.cos(a) * (jr + 4), jy + Math.sin(a) * (jr + 4));
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      ctx.shadowColor = themeColors.accent;
+      ctx.shadowBlur = 6;
       ctx.beginPath();
       ctx.arc(jx, jy, jr, 0, Math.PI * 2);
       ctx.fillStyle = themeColors.accent;
       ctx.fill();
+      ctx.shadowBlur = 0;
       ctx.beginPath();
       ctx.arc(jx, jy, jr * 0.4, 0, Math.PI * 2);
       ctx.fillStyle = themeColors.ink;
@@ -507,31 +398,65 @@ function startArm() {
     const ga = a1 + a2;
     ctx.strokeStyle = themeColors.accent;
     ctx.lineWidth = 3.5;
+    ctx.shadowColor = themeColors.accent;
+    ctx.shadowBlur = heldPiece ? 7 : 0;
     [-gripperSpread, gripperSpread].forEach(s => {
+      const fx = wx + Math.cos(ga + s) * 13;
+      const fy = wy + Math.sin(ga + s) * 13;
       ctx.beginPath();
       ctx.moveTo(wx, wy);
-      ctx.lineTo(wx + Math.cos(ga + s) * 13, wy + Math.sin(ga + s) * 13);
+      ctx.lineTo(fx, fy);
       ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(fx, fy, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = themeColors.accent;
+      ctx.fill();
     });
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.shadowBlur = 0;
     pieces.forEach(p => {
       ctx.globalAlpha = 0.22;
       ctx.beginPath();
-      ctx.ellipse(p.x + 1, p.y + (p.kind === 'box' ? 9 : 11), 9, 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(p.x + 1, p.y + 10, 9, 3, 0, 0, Math.PI * 2);
       ctx.fillStyle = themeColors.ink;
       ctx.fill();
       ctx.globalAlpha = 1;
-      if (p.kind === 'box') {
-        drawChip(p.x, p.y, p.held);
-      } else {
-        ctx.font = '22px serif';
-        ctx.fillStyle = p.held ? themeColors.accent : themeColors.ink;
-        ctx.fillText(p.glyph, p.x, p.y);
-      }
+      drawPart(p);
     });
-    ctx.textAlign = 'left';
+
+    pulses.forEach(pu => { pu.r += 1.5; pu.alpha -= 0.04; });
+    pulses = pulses.filter(pu => pu.alpha > 0);
+    pulses.forEach(pu => {
+      ctx.globalAlpha = Math.max(0, pu.alpha);
+      ctx.beginPath();
+      ctx.arc(pu.x, pu.y, pu.r, 0, Math.PI * 2);
+      ctx.strokeStyle = themeColors.accent;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    particles.forEach(pt => {
+      pt.x += pt.vx; pt.y += pt.vy;
+      pt.vx *= 0.94; pt.vy *= 0.94;
+      pt.life -= 0.035;
+    });
+    particles = particles.filter(pt => pt.life > 0);
+    particles.forEach(pt => {
+      ctx.globalAlpha = Math.max(0, pt.life);
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = themeColors.accent;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    ctx.font = '10px "IBM Plex Mono", monospace';
+    ctx.fillStyle = themeColors.mid;
+    ctx.textAlign = 'right';
     ctx.textBaseline = 'alphabetic';
+    const deg1 = Math.round((((a1 * 180 / Math.PI) % 360) + 360) % 360);
+    const deg2 = Math.round((((a2 * 180 / Math.PI) % 360) + 360) % 360);
+    ctx.fillText(`θ1 ${deg1}° · θ2 ${deg2}° · GRIP ${gripperClosed ? 'CLOSE' : 'OPEN'}`, w - 10, 16);
+    ctx.textAlign = 'left';
   };
   if (reducedMotion) {
     drawStatic();
@@ -678,96 +603,11 @@ function closeDialog(el) {
   lastFocused?.focus();
 }
 document.querySelectorAll('[data-close]').forEach(btn => {
-  btn.addEventListener('click', () => closeDialog(btn.closest('.cmdk, .brief, .pmodal')));
-});
-
-const cmdk = document.getElementById('cmdk');
-const cmdkInput = document.getElementById('cmdkInput');
-const cmdkList = document.getElementById('cmdkList');
-let cmdSel = 0;
-
-const commands = [
-  { label: 'Go to Skills', hint: 'J01', run: () => jump('#skills'), keys: 'goto skills j01' },
-  { label: 'Go to Experience', hint: 'J02', run: () => jump('#experience'), keys: 'goto experience meraque j02' },
-  { label: 'Go to Final Year Project', hint: 'J03', run: () => jump('#fyp'), keys: 'goto fyp digital twin isaac j03' },
-  { label: 'Go to Projects', hint: 'J04', run: () => jump('#projects'), keys: 'goto projects builds j04' },
-  { label: 'Go to Education', hint: 'J05', run: () => jump('#education'), keys: 'goto education apu j05' },
-  { label: 'Go to Leadership', hint: 'J06', run: () => jump('#leadership'), keys: 'goto leadership imeche j06' },
-  { label: 'Go to Strategic Profile', hint: 'J07', run: () => jump('#swot'), keys: 'goto swot strategic j07' },
-  { label: 'Go to Programme Outcomes', hint: 'J08', run: () => jump('#outcomes'), keys: 'goto plo outcomes j08' },
-  { label: 'Go to Contact', hint: 'J09', run: () => jump('#contact'), keys: 'goto contact email j09' },
-  { label: 'Toggle Sim / Field view', hint: 'M', run: () => setMode(root.getAttribute('data-mode') === 'sim' ? 'field' : 'sim'), keys: 'sim field mode theme toggle twin' },
-  { label: 'Open 30-second brief', hint: 'recruiters', run: () => openDialog(brief), keys: 'brief recruiter summary quick 30' },
-  { label: 'Copy email address', hint: 'clipboard', run: copyEmail, keys: 'email copy contact mail' },
-  { label: 'Open LinkedIn', hint: 'new tab', run: () => window.open('https://www.linkedin.com/in/sanjay-kumar-sku', '_blank'), keys: 'linkedin profile social' },
-  { label: 'Download CV', hint: 'pdf', run: () => { window.location.href = 'assets/Sanjay_Kumar_CV.pdf'; }, keys: 'cv resume download pdf' },
-  { label: 'Call Sanjay', hint: '+60 17-288 6247', run: () => { window.location.href = 'tel:+60172886247'; }, keys: 'call phone tel' }
-];
-
-function jump(sel) {
-  document.querySelector(sel)?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
-}
-
-function copyEmail() {
-  navigator.clipboard?.writeText('sanjaykumaru082@gmail.com').then(() => {
-    hudPwr.textContent = 'COPIED';
-    setTimeout(() => { hudPwr.textContent = '5.00 V'; }, 1800);
-  }).catch(() => { window.location.href = 'mailto:sanjaykumaru082@gmail.com'; });
-}
-
-function filterCommands(q) {
-  const s = q.trim().toLowerCase();
-  if (!s) return commands;
-  return commands.filter(c => (c.label + ' ' + c.keys).toLowerCase().includes(s));
-}
-
-function renderCommands(q) {
-  const items = filterCommands(q);
-  cmdSel = Math.min(cmdSel, Math.max(0, items.length - 1));
-  cmdkList.innerHTML = '';
-  items.forEach((c, i) => {
-    const li = document.createElement('li');
-    li.setAttribute('role', 'option');
-    li.className = i === cmdSel ? 'sel' : '';
-    li.innerHTML = `<span>${c.label}</span><span class="ck-hint">${c.hint}</span>`;
-    li.addEventListener('click', () => { closeDialog(cmdk); c.run(); });
-    li.addEventListener('pointerenter', () => { cmdSel = i; renderCommands(cmdkInput.value); });
-    cmdkList.appendChild(li);
-  });
-  if (!items.length) {
-    const li = document.createElement('li');
-    li.innerHTML = '<span>No matching command — try "goto", "sim", "brief", "email"</span>';
-    cmdkList.appendChild(li);
-  }
-  return items;
-}
-
-function openCmdk() {
-  cmdSel = 0;
-  cmdkInput.value = '';
-  renderCommands('');
-  openDialog(cmdk);
-  cmdkInput.focus();
-}
-document.getElementById('cmdBtn').addEventListener('click', openCmdk);
-document.getElementById('cmdHint').addEventListener('click', openCmdk);
-
-cmdkInput.addEventListener('input', () => { cmdSel = 0; renderCommands(cmdkInput.value); });
-cmdkInput.addEventListener('keydown', e => {
-  const items = filterCommands(cmdkInput.value);
-  if (e.key === 'ArrowDown') { e.preventDefault(); cmdSel = (cmdSel + 1) % items.length; renderCommands(cmdkInput.value); }
-  if (e.key === 'ArrowUp') { e.preventDefault(); cmdSel = (cmdSel - 1 + items.length) % items.length; renderCommands(cmdkInput.value); }
-  if (e.key === 'Enter' && items[cmdSel]) { closeDialog(cmdk); items[cmdSel].run(); }
+  btn.addEventListener('click', () => closeDialog(btn.closest('.brief, .pmodal')));
 });
 
 document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-    e.preventDefault();
-    cmdk.hidden ? openCmdk() : closeDialog(cmdk);
-    return;
-  }
   const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
-  if (e.key === '/' && !typing && cmdk.hidden) { e.preventDefault(); openCmdk(); return; }
   if (e.key.toLowerCase() === 'm' && !typing && openDialogs.size === 0) {
     setMode(root.getAttribute('data-mode') === 'sim' ? 'field' : 'sim');
     return;
